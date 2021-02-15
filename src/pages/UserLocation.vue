@@ -6,7 +6,7 @@
               <div class="ui segment">
                   <div class="field">
                       <div class="ui right icon input large">
-                          <input type="text" placeholder="Enter your address..">
+                          <input type="text" v-model="address" placeholder="Enter your address..">
                           <i class="location arrow link icon" @click="locatorAlert"></i>
                       </div>
                   </div>
@@ -24,7 +24,7 @@ import axios from 'axios'
 export default {
     data(){
         return{
-
+            address: ""
         }
     },
     methods: {
@@ -45,14 +45,16 @@ export default {
             }
         },
         getAddressFrom(lat, long){
-            axios.get('https://maps.googleapis.com/maps/api/geocode/json?latlng='
+            axios.get("https://maps.googleapis.com/maps/api/geocode/json?latlng="
              + lat +
-             ',' 
-             + long 
-             + '&key=AIzaSyBH9KpHSHWGYxC8BB_-0BpT7uziEthw-4k').then(response => {
+             ","
+             + long +
+             "&key=AIzaSyC_PNlFvbM1LVO55Ep_8NKyf6oylut7JTg")
+             .then(response => {
                  if(response.data.error_message){
                      console.error(response.data.error_message)
                  }else{
+                     this.address = response.data.results[0].formatted_address
                      console.log(response.data.results[0].formatted_address)
                  }
              }).catch(error => {
