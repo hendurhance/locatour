@@ -1,12 +1,17 @@
 <template>
-  <section class="ui two column centered grid">
+  <section class="ui column centered grid">
       <div class="column">
           <form action="" class="ui segment large form">
-              <div class="ui message red"></div>
+              <div class="ui message red" v-show="error"> {{ error }} </div>
               <div class="ui segment">
                   <div class="field">
-                      <div class="ui right icon input large">
-                          <input type="text" v-model="address" placeholder="Enter your address..">
+                      <div class="ui right icon input large" :class="{loading:isLoading}">
+                          <input 
+                            id="autocomplete"
+                            type="text" 
+                            v-model="address" 
+                            placeholder="Enter your address.."
+                          >
                           <i class="location arrow link icon" @click="locatorAlert"></i>
                       </div>
                   </div>
@@ -24,24 +29,39 @@ import axios from 'axios'
 export default {
     data(){
         return{
-            address: ""
+            address: '',
+            error: '',
+            isLoading: false
         }
+    },
+    mounted(){
+        const google = window.google
+        new google.maps.places.Autocomplete(
+            document.getElementById("autocomplete")
+        )
     },
     methods: {
         locatorAlert(){
+
+            this.isLoading = true
+
             if(navigator.geolocation){
                 navigator.geolocation.getCurrentPosition(
                     position => {
                         this.getAddressFrom(position.coords.latitude, position.coords.longitude)
-                        console.log(position.coords.latitude)
-                        console.log(position.coords.longitude)
+                        // console.log(position.coords.latitude)
+                        // console.log(position.coords.longitude)
                 },
                 error => {
-                    console.error(error.message)
+                    this.error = error.message + '. Allow Location permission'
+                    this.isLoading = false
+                    // console.error(error.message)
                 }
                 )
             }else{
-                console.log('Browser does not support geolocation API')
+                this.error = 'Browser does not support geolocation API'
+                this.isLoading = false
+                // console.error('Browser does not support geolocation API')
             }
         },
         getAddressFrom(lat, long){
@@ -52,13 +72,18 @@ export default {
              "&key=AIzaSyC_PNlFvbM1LVO55Ep_8NKyf6oylut7JTg")
              .then(response => {
                  if(response.data.error_message){
-                     console.error(response.data.error_message)
+                     this.error = response.data.error_message
+                     this.isLoading = false
+                    //  console.error(response.data.error_message)
                  }else{
                      this.address = response.data.results[0].formatted_address
-                     console.log(response.data.results[0].formatted_address)
+                    //  console.log(response.data.results[0].formatted_address)
+                     this.isLoading = false
                  }
              }).catch(error => {
-                 console.error(error.message)
+                 this.error = error.message
+                 this.isLoading = false
+                //  console.error(error.message)
              })
         }
     }
