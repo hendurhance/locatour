@@ -9,7 +9,7 @@
                           <input 
                             id="autocomplete"
                             type="text" 
-                            v-model="address" 
+                            v-model.trim="address" 
                             placeholder="Enter your address.."
                           >
                           <i class="location arrow link icon" @click="locatorAlert"></i>
@@ -74,7 +74,7 @@ export default {
                  if(response.data.error_message){
                      this.error = response.data.error_message
                      this.isLoading = false
-                    //  console.error(response.data.error_message)
+                     console.error(response.data.error_message + '1')
                  }else{
                      this.address = response.data.results[0].formatted_address
                     //  console.log(response.data.results[0].formatted_address)
@@ -83,7 +83,7 @@ export default {
              }).catch(error => {
                  this.error = error.message
                  this.isLoading = false
-                //  console.error(error.message)
+                 console.error(error.message + '2')
              })
         }
     }
