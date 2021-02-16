@@ -37,7 +37,12 @@ export default {
     mounted(){
         const google = window.google
         new google.maps.places.Autocomplete(
-            document.getElementById("autocomplete")
+            document.getElementById("autocomplete"),
+            {
+                bounds: new google.maps.LatLngBounds(
+                    new google.maps.LatLng(6.5244, 3.3792)
+                )
+            }
         )
     },
     methods: {
@@ -74,7 +79,7 @@ export default {
                  if(response.data.error_message){
                      this.error = response.data.error_message
                      this.isLoading = false
-                     console.error(response.data.error_message + '1')
+                    //  console.error(response.data.error_message)
                  }else{
                      this.address = response.data.results[0].formatted_address
                     //  console.log(response.data.results[0].formatted_address)
@@ -83,7 +88,7 @@ export default {
              }).catch(error => {
                  this.error = error.message
                  this.isLoading = false
-                 console.error(error.message + '2')
+                //  console.error(error.message)
              })
         }
     }
@@ -96,4 +101,23 @@ export default {
 {
     background-color: #FFB60B
 }
+
+.pac-icon{
+    display: none;
+}
+
+.pac-tem{
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.pac-item:hover{
+    background-color: #eee;
+}
+
+.pac-item-query{
+    font-size: 16px;
+}
+
 </style>
