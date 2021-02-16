@@ -1,5 +1,6 @@
 <template>
-  <section class="ui column centered grid">
+<div>
+<section class="ui column centered grid other">
       <div class="column">
           <form action="" class="ui segment large form">
               <div class="ui message red" v-show="error"> {{ error }} </div>
@@ -20,6 +21,11 @@
           </form>
       </div>
   </section>
+
+  <section id="map">
+
+  </section>
+</div>
 </template>
 
 <script>
@@ -120,4 +126,19 @@ export default {
     font-size: 16px;
 }
 
+.other{
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+#map{
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: #FFB60B;
+    width: 100%;
+    
+}
 </style>
