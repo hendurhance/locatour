@@ -42,7 +42,7 @@ export default {
     },
     mounted(){
         const google = window.google
-        new google.maps.places.Autocomplete(
+        let autocomplete = new google.maps.places.Autocomplete(
             document.getElementById("autocomplete"),
             {
                 bounds: new google.maps.LatLngBounds(
@@ -50,6 +50,15 @@ export default {
                 )
             }
         )
+
+        autocomplete.addListener('place_changed', () => {
+            let place = autocomplete.getPlace()
+            console.warn(place)
+            this.showUserLocationonTheMap(
+                place.geometry.location.lat(),
+                place.geometry.location.lng() 
+                )
+        })
     },
     methods: {
         locatorAlert(){
@@ -106,9 +115,13 @@ export default {
                 center: new google.maps.LatLng(latitude, longitude),
                 mapTypeId: google.maps.MapTypeId.ROADMAP
             })
-            
+
             console.log(map)
             // Add Address Marker
+            new google.maps.Marker({
+                position: new google.maps.LatLng(latitude, longitude),
+                map: map
+            })
         }
     }
 }
