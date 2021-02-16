@@ -62,6 +62,7 @@ export default {
                         this.getAddressFrom(position.coords.latitude, position.coords.longitude)
                         // console.log(position.coords.latitude)
                         // console.log(position.coords.longitude)
+                        this.showUserLocationonTheMap(position.coords.latitude, position.coords.longitude)
                 },
                 error => {
                     this.error = error.message + '. Allow Location permission'
@@ -96,6 +97,18 @@ export default {
                  this.isLoading = false
                 //  console.error(error.message)
              })
+        },
+        showUserLocationonTheMap(latitude, longitude){
+            // Create Map Object
+            const google = window.google
+            let map = new google.maps.Map(document.getElementById('map'),{
+                zoom: 15,
+                center: new google.maps.LatLng(latitude, longitude),
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            })
+            
+            console.log(map)
+            // Add Address Marker
         }
     }
 }
