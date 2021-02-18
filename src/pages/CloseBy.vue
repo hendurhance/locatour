@@ -35,6 +35,16 @@
                   <button class="ui button" @click="findCloseBy">Find CloseBy Places</button>
               </div>
           </form>
+          <div class="ui segment">
+              <div class="ui divided items">
+                  <div class="item" v-for="place in places" :key="place.id">
+                      <div class="content">
+                          <div class="header">{{ place.name }}</div>
+                          <div class="meta">{{ place.vicinity }}</div>
+                      </div>
+                  </div>
+              </div>
+          </div>
       </div>
       <div class="ten wide column green"></div>
   </div>
@@ -54,7 +64,8 @@ export default {
             lat: 0,
             lng: 0,
             type: '',
-            range: ''
+            range: '',
+            places: []
         }
     },
     mounted(){
@@ -129,14 +140,19 @@ export default {
              })
         },
         findCloseBy(){
-            const URL = `/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.lat},
+            const URL = `http://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.lat},
             ${this.lng}&type=${this.type}&radius=${this.range * 1000}&key=${this.apiKey}`
             
             axios.get(URL).then(response => {
-                console.log(response)
+                this.places = response.data.results
+                this.showNearbyMap()
+                console.log(response.data.results)
             }).catch(error => {
                 this.error = error.message
             })
+        },
+        showNearbyMap(){
+            
         }
     }
 }
