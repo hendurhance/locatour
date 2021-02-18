@@ -1,6 +1,6 @@
 <template>
   <div class="ui grid">
-      <div class="six wide column">
+      <div class="six wide column main-color">
            <form @submit.prevent class="ui segment large form">
               <div class="ui message red" v-show="error"> {{ error }} </div>
               <div class="ui segment">
@@ -37,7 +37,13 @@
           </form>
           <div class="ui segment list-items">
               <div class="ui divided items">
-                  <div class="item" v-for="place in places" :key="place.id">
+                  <div 
+                    class="item" 
+                    v-for="(place, index) in places" 
+                    :key="place.id" 
+                    @click="showInfoWindow(index)"
+                    :class="{'active' : activeIndex === index}"
+                   >
                       <div class="content">
                           <div class="header">{{ place.name }}</div>
                           <div class="meta">{{ place.vicinity }}</div>
@@ -46,7 +52,7 @@
               </div>
           </div>
       </div>
-      <div class="ten wide column green" ref="map"></div>
+      <div class="ten wide column main-color" ref="map"></div>
   </div>
 </template>
 
@@ -65,7 +71,9 @@ export default {
             lng: 0,
             type: '',
             range: '',
-            places: []
+            places: [],
+            markers: [],
+            activeIndex: -1
         }
     },
     mounted(){
@@ -174,6 +182,8 @@ export default {
                     map: map
                 })
 
+                this.markers.push(marker)
+
                 google.maps.event.addListener(
                     marker, "click", () => {
                         const URL = `http://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/place/details/json?key=${this.apiKey}&place_id=${placeID}`
@@ -201,14 +211,19 @@ export default {
                     })
                 // console.log(marker)
             }
+        },
+        showInfoWindow(index){
+            this.activeIndex = index
+            const google = window.google
+            new google.maps.event.trigger(this.markers[index], 'click')
         }
     }
 }
 </script>
 
-<style>
+<style scoped>
 .ui.button,
-.location.arrow
+.location.arrow, .main-color
 {
     background-color: #FFB60B
 }
@@ -254,5 +269,9 @@ export default {
 .list-items{
     max-height: 60vh;
     overflow: auto;
+}
+
+.active{
+    background: #FFB60B !important;
 }
 </style>
