@@ -146,7 +146,7 @@ export default {
             axios.get(URL).then(response => {
                 this.places = response.data.results
                 this.showNearbyMap()
-                console.log(response.data.results)
+                // console.log(response.data.results)
             }).catch(error => {
                 this.error = error.message
             })
@@ -167,6 +167,7 @@ export default {
             for(let i = 0; i < this.places.length; i++){
                 const lat = this.places[i].geometry.location.lat
                 const lng = this.places[i].geometry.location.lng
+                const placeID = this.places[i].place_id
 
                 const marker = new google.maps.Marker({
                     position: new google.maps.LatLng(lat,lng),
@@ -175,10 +176,30 @@ export default {
 
                 google.maps.event.addListener(
                     marker, "click", () => {
-                        infoWindow.setContent(`<div class="ui header">${this.places[i].name}</div>`)
-                        infoWindow.open(map, marker)
+                        const URL = `http://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/place/details/json?key=${this.apiKey}&place_id=${placeID}`
+                        
+                        axios.get(URL).then(response => {
+                            if(response.data.error_message){
+                                this.error = response.data.error_message
+                            }else{
+                                const place = response.data.result
+                                if(place.website === undefined){
+                                    place.website = 'Not Available'
+                                }
+                                infoWindow.setContent(`
+                                    <div class="ui header">${place.name}</div>
+                                    <p>${place.formatted_address}</p>
+                                    <a style='color: black' href='tel:+234${place.formatted_phone_number}' target='_blank'>${place.formatted_phone_number}</a> <br>
+                                    <a href='${place.website}' target='_blank'>${place.website}</a>
+                                `)
+                                infoWindow.open(map, marker)
+                            }
+                            console.log(response.data.result)
+                        }).catch(error => {
+                            this.error = error.message
+                        })
                     })
-                console.log(marker)
+                // console.log(marker)
             }
         }
     }
@@ -200,6 +221,10 @@ export default {
     padding: 10px;
     font-size: 16px;
     cursor: pointer;
+}
+
+.gm-style .gm-style-iw{
+    color: black;
 }
 
 .pac-item:hover{
