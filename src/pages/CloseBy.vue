@@ -35,7 +35,7 @@
                   <button class="ui button" @click="findCloseBy">Find CloseBy Places</button>
               </div>
           </form>
-          <div class="ui segment">
+          <div class="ui segment list-items">
               <div class="ui divided items">
                   <div class="item" v-for="place in places" :key="place.id">
                       <div class="content">
@@ -46,7 +46,7 @@
               </div>
           </div>
       </div>
-      <div class="ten wide column green"></div>
+      <div class="ten wide column green" ref="map"></div>
   </div>
 </template>
 
@@ -82,7 +82,7 @@ export default {
         autocomplete.addListener('place_changed', () => {
             let place = autocomplete.getPlace()
             console.warn(place)
-            this.showUserLocationonTheMap(
+            this.showNearbyMap(
                 place.geometry.location.lat(),
                 place.geometry.location.lng() 
                 )
@@ -103,7 +103,7 @@ export default {
                         this.getAddressFrom(position.coords.latitude, position.coords.longitude)
                         // console.log(position.coords.latitude)
                         // console.log(position.coords.longitude)
-                        this.showUserLocationonTheMap(position.coords.latitude, position.coords.longitude)
+                        this.showNearbyMap(position.coords.latitude, position.coords.longitude)
                 },
                 error => {
                     this.error = error.message + '. Allow Location permission'
@@ -152,7 +152,26 @@ export default {
             })
         },
         showNearbyMap(){
-            
+            const google = window.google
+            const map = new google.maps.Map(
+                this.$refs['map'],
+                {
+                    zoom: 15,
+                    center: new google.maps.LatLng(this.lat, this.lng),
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                }
+            )
+
+            for(let i = 0; i < this.places.length; i++){
+                const lat = this.places[i].geometry.location.lat
+                const lng = this.places[i].geometry.location.lng
+
+                const marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(lat,lng),
+                    map: map
+                })
+                console.log(marker)
+            }
         }
     }
 }
@@ -197,5 +216,10 @@ export default {
     background: #FFB60B;
     width: 100%;
     
+}
+
+.list-items{
+    max-height: 60vh;
+    overflow: auto;
 }
 </style>
