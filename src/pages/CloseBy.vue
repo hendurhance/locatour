@@ -1,7 +1,7 @@
 <template>
   <div class="ui grid">
       <div class="six wide column">
-           <form action="" class="ui segment large form">
+           <form @submit.prevent class="ui segment large form">
               <div class="ui message red" v-show="error"> {{ error }} </div>
               <div class="ui segment">
                   <div class="field">
@@ -15,7 +15,24 @@
                           <i class="location arrow link icon" @click="locatorAlert"></i>
                       </div>
                   </div>
-                  <button class="ui button">Search</button>
+                  <div class="field">
+                      <div class="two fields">
+                          <div class="field">
+                              <select v-model="type">
+                                  <option value="restaurant">Restaurant</option>
+                              </select>
+                          </div>
+                          <div class="field">
+                              <select v-model="range">
+                                  <option value="5">5KM</option>
+                                  <option value="10">10KM</option>
+                                  <option value="15">15KM</option>
+                                  <option value="20">20KM</option>
+                              </select>
+                          </div>
+                      </div>
+                  </div>
+                  <button class="ui button" @click="findCloseBy">Find CloseBy Places</button>
               </div>
           </form>
       </div>
@@ -32,7 +49,12 @@ export default {
         return{
             address: '',
             error: '',
-            isLoading: false
+            isLoading: false,
+            apiKey: "AIzaSyC_PNlFvbM1LVO55Ep_8NKyf6oylut7JTg",
+            lat: 0,
+            lng: 0,
+            type: '',
+            range: ''
         }
     },
     mounted(){
@@ -63,6 +85,10 @@ export default {
             if(navigator.geolocation){
                 navigator.geolocation.getCurrentPosition(
                     position => {
+                        this.lat = position.coords.latitude
+                        this.lng = position.coords.longitude
+
+                        // getting users address
                         this.getAddressFrom(position.coords.latitude, position.coords.longitude)
                         // console.log(position.coords.latitude)
                         // console.log(position.coords.longitude)
@@ -85,7 +111,7 @@ export default {
              + lat +
              ","
              + long +
-             "&key=AIzaSyC_PNlFvbM1LVO55Ep_8NKyf6oylut7JTg")
+             "&key=" + this.apiKey)
              .then(response => {
                  if(response.data.error_message){
                      this.error = response.data.error_message
@@ -102,21 +128,11 @@ export default {
                 //  console.error(error.message)
              })
         },
-        showUserLocationonTheMap(latitude, longitude){
-            // Create Map Object
-            const google = window.google
-            let map = new google.maps.Map(document.getElementById('map'),{
-                zoom: 15,
-                center: new google.maps.LatLng(latitude, longitude),
-                mapTypeId: google.maps.MapTypeId.ROADMAP
-            })
-
-            console.log(map)
-            // Add Address Marker
-            new google.maps.Marker({
-                position: new google.maps.LatLng(latitude, longitude),
-                map: map
-            })
+        findCloseBy(){
+            console.log(this.lng)
+            console.log(this.lat)
+            console.log(this.type)
+            console.log(this.range)
         }
     }
 }
