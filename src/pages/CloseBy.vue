@@ -129,10 +129,14 @@ export default {
              })
         },
         findCloseBy(){
-            console.log(this.lng)
-            console.log(this.lat)
-            console.log(this.type)
-            console.log(this.range)
+            const URL = `/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.lat},
+            ${this.lng}&type=${this.type}&radius=${this.range * 1000}&key=${this.apiKey}`
+            
+            axios.get(URL).then(response => {
+                console.log(response)
+            }).catch(error => {
+                this.error = error.message
+            })
         }
     }
 }
