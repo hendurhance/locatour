@@ -148,7 +148,7 @@ export default {
              })
         },
         findCloseBy(){
-            const URL = `http://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.lat},
+            const URL = `https://secret-ocean-49799.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.lat},
             ${this.lng}&type=${this.type}&radius=${this.range * 1000}&key=${this.apiKey}`
             
             axios.get(URL).then(response => {
@@ -186,7 +186,7 @@ export default {
 
                 google.maps.event.addListener(
                     marker, "click", () => {
-                        const URL = `http://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/place/details/json?key=${this.apiKey}&place_id=${placeID}`
+                        const URL = `https://secret-ocean-49799.herokuapp.com/https://maps.googleapis.com/maps/api/place/details/json?key=${this.apiKey}&place_id=${placeID}`
                         
                         axios.get(URL).then(response => {
                             if(response.data.error_message){
@@ -195,6 +195,9 @@ export default {
                                 const place = response.data.result
                                 if(place.website === undefined){
                                     place.website = 'Not Available'
+                                }
+                                if(place.formatted_phone_number === undefined){
+                                    place.formatted_phone_number = 'Not Available'
                                 }
                                 infoWindow.setContent(`
                                     <div class="ui header">${place.name}</div>
