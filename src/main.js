@@ -3,6 +3,7 @@ import App from './App.vue'
 import VueRouter from 'vue-router'
 import UserLocation from '@/pages/UserLocation.vue'
 import CloseBy from '@/pages/CloseBy.vue'
+import CloseBy from '@/pages/DistanceCalc.vue'
 
 Vue.config.productionTip = false
 
@@ -21,6 +22,11 @@ const router = new VueRouter({
         path: '/closeby',
         name: 'CloseBy',
         component: CloseBy
+      },
+      {
+        path: '/distance-calculator',
+        name: 'Distance Calculator',
+        component: DistanceCalc
       }
   ]
 })
