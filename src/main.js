@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import VueRouter from 'vue-router'
+import "semantic-ui-css/semantic.min.css"
 import UserLocation from '@/pages/UserLocation.vue'
 import CloseBy from '@/pages/CloseBy.vue'
 import DistanceCalc from '@/pages/DistanceCalc.vue'
