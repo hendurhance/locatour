@@ -1,6 +1,11 @@
 <template>
 <section class="origin-destination">
   <div class="ui form">
+    <div class="ui message red small" v-show="error">
+      {{ error }}
+    </div>
+  </div>
+  <div class="ui form">
     <div class="two fields">
       <div class="field">
         <div class="ui left icon input">
@@ -14,7 +19,11 @@
           <input type="text" placeholder="Destination" ref="destination">
         </div>
       </div>
-      <button class="ui button small green" @click="calculateRoutes">Routes</button>
+      <button 
+        class="ui button small green"
+        :class="{loading:isLoading}" 
+        @click="calculateRoutes"
+      >Routes</button>
     </div>
   </div>
 </section>
@@ -36,8 +45,12 @@ export default {
           address: '',
           lat: 0,
           lng: 0
-        }
-      }
+        },
+        distance: {},
+        duration: {}
+      },
+      error: '',
+      isLoading: false
     }
   },
   mounted(){
@@ -63,16 +76,39 @@ export default {
   },
   methods: {
     calculateRoutes(){
-      console.log(this.route)
-      const URL = `https://secret-ocean-49799.herokuapp.com/https://maps.googleapis.com/maps/api/distancematrix/json?origins=${this.route.origin.lat},${this.route.origin.lng}&destinations=${this.route.destination.lat},${this.route.destination.lng}&key=AIzaSyC_PNlFvbM1LVO55Ep_8NKyf6oylut7JTg`
-      axios
-      .get(URL)
-      .then(response => {
-        console.log(response)
-      })
-      .catch(error => {
-        console.log(error.message)
-      })
+      this.isLoading = true
+      // console.log(this.route)
+      if(this.route.origin.address === '' || this.route.destination.address === ''){
+        this.error = "Input is Invalid"
+      }else{
+        this.error = ''
+        const URL = `https://secret-ocean-49799.herokuapp.com/https://maps.googleapis.com/maps/api/distancematrix/json?origins=${this.route.origin.lat},${this.route.origin.lng}&destinations=${this.route.destination.lat},${this.route.destination.lng}&key=AIzaSyC_PNlFvbM1LVO55Ep_8NKyf6oylut7JTg`
+        axios
+        .get(URL)
+        .then(response => {
+          if(response.data.error_message){
+            this.error = response.data.error_message
+          }else{
+            const elements = response.data.rows[0].elements
+            
+            if(elements[0].status === "ZERO_RESULTS"){
+              this.error = 'No Results Available'
+            }else{
+              console.info(elements[0].distance)
+              console.info(elements[0].duration)
+
+              this.route.distance = elements[0].distance
+              this.route.duration = elements[0].duration
+
+              this.isLoading = false
+            }
+          }
+        })
+        .catch(error => {
+          this.isLoading = false
+          this.error = error.message
+        })
+      }
     }
   }
 }
@@ -83,6 +119,6 @@ export default {
   position: relative;
   z-index: 1;
   max-width: 600px;
-  margin: 10px;
+  margin: 5px;
 }
 </style>
