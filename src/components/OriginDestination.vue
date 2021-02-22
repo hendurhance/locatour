@@ -31,6 +31,7 @@
 
 <script>
 import axios from 'axios'
+import firebase from 'firebase'
 
 export default {
   data(){
@@ -100,6 +101,8 @@ export default {
               this.route.distance = elements[0].distance
               this.route.duration = elements[0].duration
 
+              this.saveTransit()
+
               this.isLoading = false
             }
           }
@@ -109,6 +112,12 @@ export default {
           this.error = error.message
         })
       }
+    },
+    saveTransit() {
+      const db = firebase.firestore()
+      db.collection('routes')
+      .doc()
+      .set(this.route)
     }
   }
 }
