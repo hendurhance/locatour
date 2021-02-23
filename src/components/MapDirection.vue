@@ -5,8 +5,14 @@
 </template>
 
 <script>
+import { EventBus } from '@/EventBus.js'
 export default {
+  mounted(){
+    EventBus.$on('route-data', data => {
+      console.log(data)
+    })
 
+  }
 }
 </script>
 
