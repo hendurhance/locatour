@@ -14,7 +14,7 @@
       </optgroup>
     </select>
   </div>
-  <div class="item" v-for="route in routes" :key="route.id">
+  <div class="item" v-for="route in routes" :key="route.id" @click="routeItem(route)">
     <div>
       <i class="marker alternate icon"></i>
       {{ route.origin.address }}
@@ -31,7 +31,7 @@
 
 <script>
 import firebase from 'firebase'
-
+import { EventBus } from '@/EventBus.js'
 export default {
   data(){
     return{
@@ -54,7 +54,7 @@ export default {
   methods: {
     sortRoute(e){
       const sortName = e.target.value.split('-')[0]
-      const sortOrder = e.target.value.split('-').[1]
+      const sortOrder = e.target.value.split('-')[1]
       
       const db = firebase.firestore()
       db.collection('routes').orderBy(sortName + '.value', sortOrder)
@@ -67,6 +67,9 @@ export default {
           this.routes.push(route)
         })
       })
+    },
+    routeItem(route){
+      EventBus.$emit("route-data", route)
     }
   }
 }
