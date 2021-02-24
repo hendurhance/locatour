@@ -11,36 +11,34 @@ export default {
     // Google constant
     const google = window.google
 
-    const map = new google.maps.Map(
-      this.$refs['map'], {
-        center: new google.maps.LatLng(6.5244, 3.3792),
-        zoom: 15,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-      }
-    )
     const directionsService = new google.maps.DirectionsService()
-    const directionsRenderer = new google.maps.DirectionsRenderer()
 
     // console.log('map info', map)
 
-    EventBus.$on('route-data', ({origin, destination}) => {
-      directionsService.route(
-        {
+    EventBus.$on('routes-data', routes => {
+      const map = new google.maps.Map(
+        this.$refs['map'], {
+          center: new google.maps.LatLng(6.5244, 3.3792),
+          zoom: 15,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        }
+      )
+      routes.forEach(({origin, destination}) => {
+        directionsService.route({
           origin: origin.address,
           destination: destination.address,
           travelMode: 'DRIVING'
         },
         (response, status) => {
           if(status === 'OK'){
+            const directionsRenderer = new google.maps.DirectionsRenderer()
             directionsRenderer.setDirections(response)
             directionsRenderer.setMap(map)
           }
-          console.log(response)
-          console.warn(status)
         }
-      )
+        )
+      })
     })
-
   }
 }
 </script>

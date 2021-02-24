@@ -13,6 +13,7 @@
         <option value="duration-desc">slow</option>
       </optgroup>
     </select>
+    <button class="ui button show-all" @click="showAllRoutes">Show All</button>
   </div>
   <div class="item" v-for="route in routes" :key="route.id" @click="routeItem(route)">
     <div>
@@ -69,7 +70,10 @@ export default {
       })
     },
     routeItem(route){
-      EventBus.$emit("route-data", route)
+      EventBus.$emit('routes-data', [route])
+    },
+    showAllRoutes(){
+      EventBus.$emit('routes-data', this.routes)
     }
   }
 }
@@ -94,5 +98,9 @@ export default {
 
 .item:hover{
   background-color: rgba(0,0,0,0.1);
+}
+
+.show-all{
+  padding: 4px 10px;
 }
 </style>
