@@ -23,7 +23,7 @@ export default {
           mapTypeId: google.maps.MapTypeId.ROADMAP
         }
       )
-      routes.forEach(({origin, destination}) => {
+      routes.forEach(({origin, destination, distance, duration}) => {
         directionsService.route({
           origin: origin.address,
           destination: destination.address,
@@ -31,19 +31,55 @@ export default {
         },
         (response, status) => {
           if(status === 'OK'){
-            const directionsRenderer = new google.maps.DirectionsRenderer()
+            const directionsRenderer = new google.maps.DirectionsRenderer({
+              suppressMarkers: true
+            })
+
+            // Infowindow code for default popup
+            this.createInfoWindowWith(origin, "marker alternate", map)
+            this.createInfoWindowWith(destination, "flag checkered", map)
+            
+
+
+            const overviewPath = response.routes[0].overview_path
+            const middleIndex = parseInt(overviewPath.length / 2)
+
+            const middleShow = overviewPath[middleIndex]
+
+            const distanceDurationLabel = new google.maps.InfoWindow({
+              content: `<i class="icon car"></i> ${distance.text} - ${duration.text}`,
+              position: new google.maps.LatLng(
+                middleShow.lat(), 
+                middleShow.lng()
+              )
+            })
+            distanceDurationLabel.open(map, null)
+
             directionsRenderer.setDirections(response)
             directionsRenderer.setMap(map)
           }
         }
         )
       })
+
     })
+  },
+  methods: {
+    createInfoWindowWith(location, icon, map){
+        // Google constant
+        const google = window.google
+        const infoWindow = new google.maps.InfoWindow({
+          content: `<i class="${icon} icon"></i>${location.address}`,
+          position: new google.maps.LatLng(location.lat, location.lng)
+        })
+
+        infoWindow.open(map, null)
+    }
   }
 }
 </script>
 
-<style scoped>
+<style >
 .map{
   position: absolute;
   top: 0;
@@ -51,5 +87,9 @@ export default {
   left: 0;
   bottom: 0;
   background-color: #FFB60B;
+}
+
+button.gm-ui-hover-effect {
+    display: none !important;
 }
 </style>
