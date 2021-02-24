@@ -9,7 +9,7 @@ import { EventBus } from '@/EventBus.js'
 export default {
   data(){
     return{
-      map: null
+      map: null,
     }
   },
   mounted(){
@@ -28,7 +28,7 @@ export default {
           mapTypeId: google.maps.MapTypeId.ROADMAP
         }
       )
-      routes.forEach(({origin, destination, distance, duration}) => {
+      routes.forEach(({origin, destination, distance, duration, color}) => {
         directionsService.route({
           origin: origin.address,
           destination: destination.address,
@@ -39,13 +39,17 @@ export default {
             const directionsRenderer = new google.maps.DirectionsRenderer({
               suppressMarkers: true,
               directions: response,
-              map: this.map 
+              map: this.map,
+              polylineOptions: {
+                strokeColor: color,
+                strokeWeight: 8
+              }
             })
 
             console.log(directionsRenderer)
             // Infowindow code for default popup
-            this.createInfoWindowWith(origin, "marker alternate")
-            this.createInfoWindowWith(destination, "flag checkered")
+            this.createInfoWindowWith(origin, "marker alternate", color)
+            this.createInfoWindowWith(destination, "flag checkered", color)
             
 
 
@@ -55,7 +59,7 @@ export default {
             const middleShow = overviewPath[middleIndex]
 
             const distanceDurationLabel = new google.maps.InfoWindow({
-              content: `<i class="icon car"></i> ${distance.text} - ${duration.text}`,
+              content: `<div style='background-color:${color};padding:5px'><i class="icon car"></i> ${distance.text} - ${duration.text}</div>`,
               position: new google.maps.LatLng(
                 middleShow.lat(), 
                 middleShow.lng()
@@ -68,7 +72,7 @@ export default {
             [
                 {lat: origin.lat, lng: origin.lng},
                 {lat: overviewPath[0].lat(), lng: overviewPath[0].lng()}
-            ])
+            ], color)
 
 
             this.createPolylineWith(
@@ -78,11 +82,7 @@ export default {
                   lat: overviewPath[overviewPath.length - 1].lat(),
                   lng: overviewPath[overviewPath.length - 1].lng(),
                 }
-            ])
-
-            
-
-
+            ], color)
 
           }
         }
@@ -92,22 +92,22 @@ export default {
     })
   },
   methods: {
-    createInfoWindowWith(location, icon){
+    createInfoWindowWith(location, icon, color){
         // Google constant
         const google = window.google
         const infoWindow = new google.maps.InfoWindow({
-          content: `<i class="${icon} icon"></i>${location.address}`,
+          content: `<div style="background-color:${color};padding:5px;"><i class="${icon} icon"></i>${location.address}</div>`,
           position: new google.maps.LatLng(location.lat, location.lng)
         })
 
         infoWindow.open(this.map, null)
     },
-    createPolylineWith(path){
+    createPolylineWith(path, color){
       // Google constant
       const google = window.google
       new google.maps.Polyline({
         path,
-        strokeColor: '#000000',
+        strokeColor: color,
         strokeOpacity: 1,
         strokeWeight: 8,
         map: this.map
@@ -125,6 +125,14 @@ export default {
   left: 0;
   bottom: 0;
   background-color: #FFB60B;
+}
+
+.gm-style .gm-style-iw-c{
+  padding: 0 !important;
+}
+
+.gm-style-iw-d{
+  overflow: hidden !important;
 }
 
 button.gm-ui-hover-effect {

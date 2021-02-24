@@ -15,7 +15,13 @@
     </select>
     <button class="ui button show-all" @click="showAllRoutes">Show All</button>
   </div>
-  <div class="item" v-for="route in routes" :key="route.id" @click="routeItem(route)">
+  <div 
+    class="item" 
+    v-for="route in routes" 
+    :key="route.id" 
+    @click="routeItem(route)"
+    :style="{'background-color':route.color}"
+  >
     <div>
       <i class="marker alternate icon"></i>
       {{ route.origin.address }}
