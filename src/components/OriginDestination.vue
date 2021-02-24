@@ -62,7 +62,7 @@ export default {
         this.$refs[ref],
         {
           bounds: new google.maps.LatLngBounds(
-                      new google.maps.LatLng(6.5244, 3.3792)
+            new google.maps.LatLng(6.5244, 3.3792)
           )
         }
       )
@@ -100,6 +100,7 @@ export default {
 
               this.route.distance = elements[0].distance
               this.route.duration = elements[0].duration
+              this.route.color = this.getRandomColor()
 
               this.saveTransit()
 
@@ -118,6 +119,14 @@ export default {
       db.collection('routes')
       .doc()
       .set(this.route)
+    },
+    getRandomColor(){
+      let characters = '0123456789ABCDEF'
+      let color = '#'
+      for(let i = 0; i < 6; i++){
+        color += characters[Math.floor(Math.random() * 16)]
+      }
+      return color;
     }
   }
 }
