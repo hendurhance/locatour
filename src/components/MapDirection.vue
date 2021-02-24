@@ -7,6 +7,11 @@
 <script>
 import { EventBus } from '@/EventBus.js'
 export default {
+  data(){
+    return{
+      map: null
+    }
+  },
   mounted(){
     // Google constant
     const google = window.google
@@ -16,7 +21,7 @@ export default {
     // console.log('map info', map)
 
     EventBus.$on('routes-data', routes => {
-      const map = new google.maps.Map(
+      this.map = new google.maps.Map(
         this.$refs['map'], {
           center: new google.maps.LatLng(6.5244, 3.3792),
           zoom: 15,
@@ -32,12 +37,15 @@ export default {
         (response, status) => {
           if(status === 'OK'){
             const directionsRenderer = new google.maps.DirectionsRenderer({
-              suppressMarkers: true
+              suppressMarkers: true,
+              directions: response,
+              map: this.map 
             })
 
+            console.log(directionsRenderer)
             // Infowindow code for default popup
-            this.createInfoWindowWith(origin, "marker alternate", map)
-            this.createInfoWindowWith(destination, "flag checkered", map)
+            this.createInfoWindowWith(origin, "marker alternate")
+            this.createInfoWindowWith(destination, "flag checkered")
             
 
 
@@ -53,10 +61,29 @@ export default {
                 middleShow.lng()
               )
             })
-            distanceDurationLabel.open(map, null)
+            distanceDurationLabel.open(this.map, null)
 
-            directionsRenderer.setDirections(response)
-            directionsRenderer.setMap(map)
+
+            this.createPolylineWith(
+            [
+                {lat: origin.lat, lng: origin.lng},
+                {lat: overviewPath[0].lat(), lng: overviewPath[0].lng()}
+            ])
+
+
+            this.createPolylineWith(
+              [
+                {lat: destination.lat, lng: destination.lng},
+                {
+                  lat: overviewPath[overviewPath.length - 1].lat(),
+                  lng: overviewPath[overviewPath.length - 1].lng(),
+                }
+            ])
+
+            
+
+
+
           }
         }
         )
@@ -65,7 +92,7 @@ export default {
     })
   },
   methods: {
-    createInfoWindowWith(location, icon, map){
+    createInfoWindowWith(location, icon){
         // Google constant
         const google = window.google
         const infoWindow = new google.maps.InfoWindow({
@@ -73,7 +100,18 @@ export default {
           position: new google.maps.LatLng(location.lat, location.lng)
         })
 
-        infoWindow.open(map, null)
+        infoWindow.open(this.map, null)
+    },
+    createPolylineWith(path){
+      // Google constant
+      const google = window.google
+      new google.maps.Polyline({
+        path,
+        strokeColor: '#000000',
+        strokeOpacity: 1,
+        strokeWeight: 8,
+        map: this.map
+      })
     }
   }
 }
